@@ -3,7 +3,7 @@ from enum import Enum, auto
 import json
 
 clients = []
-dogs = []
+scheduleList = []
 
 
 class DataType(Enum):
@@ -35,7 +35,7 @@ class Simulator(WebSocket):
             if 'enabled' not in data.keys():
                 data['enabled'] = True
             if 'id' not in data.keys():
-                data['id'] = len(dogs)
+                data['id'] = len(scheduleList)
             if 'ratio' not in data.keys():
                 data['ratio'] = 0
 
@@ -50,17 +50,17 @@ class Simulator(WebSocket):
                 }
             }
 
-            dogs.append({'hour': data['hour'], 'minute': data['minute'], 'enabled': data['enabled'], 'ratio': data['ratio']})
+            scheduleList.append({'hour': data['hour'], 'minute': data['minute'], 'enabled': data['enabled'], 'ratio': data['ratio']})
         elif DataType(rqtType) == DataType.DATA_SCHEDULE_REMOVE:
-            if data['id'] <= len(dogs):
-                del dogs[data['id']]
+            if data['id'] <= len(scheduleList):
+                del scheduleList[data['id']]
 
-            dataDict = {
-                'type': j['type'],
-                'data': {
-                    'id': data['id']
-                }
-            }
+            dataDict = j
+        elif DataType(rqtType) == DataType.DATA_SCHEDULE_ENABLE:
+            if data['id'] <= len(scheduleList):
+                scheduleList[data['id']]['enabled'] = data['value']
+
+                dataDict = j
 
         sendData = json.dumps(dataDict)
 
