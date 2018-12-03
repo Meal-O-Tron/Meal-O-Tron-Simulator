@@ -3,6 +3,7 @@ from enum import Enum, auto
 import json
 
 clients = []
+dogs = []
 
 
 class DataType(Enum):
@@ -22,37 +23,50 @@ class DataType(Enum):
     DATA_DOG_END = auto()
 
 
-class SimpleChat(WebSocket):
+class Simulator(WebSocket):
     def handleMessage(self):
         print(self.address, 'sent', self.data)
         j = json.loads(self.data)
-        type = j['type'] + 1
-        data = ''
+        rqtType = j['type'] + 1
+        data = j['data']
+        dataDict = {}
 
-        if DataType(type) == DataType.DATA_SCHEDULE_ADD:
-            if j['data']['enabled'] is None:
-                j['data']['enabled'] = True
-            if j['data']['id'] is None:
-                j['data']['id'] = 0
-            if j['data']['ratio'] is None:
-                j['data']['ratio'] = 0
+        if DataType(rqtType) == DataType.DATA_SCHEDULE_ADD:
+            if 'enabled' not in data.keys():
+                data['enabled'] = True
+            if 'id' not in data.keys():
+                data['id'] = len(dogs)
+            if 'ratio' not in data.keys():
+                data['ratio'] = 0
 
             dataDict = {
                 'type': j['type'],
                 'data': {
-                    'hour': j['data']['hour'],
-                    'minute': j['data']['minute'],
-                    'enabled': j['data']['enabled'],
-                    'id': j['data']['id'],
-                    'ratio': j['data']['ratio']
+                    'hour': data['hour'],
+                    'minute': data['minute'],
+                    'enabled': data['enabled'],
+                    'id': data['id'],
+                    'ratio': data['ratio']
                 }
             }
 
-            data = json.dumps(dataDict)
+            dogs.append({'hour': data['hour'], 'minute': data['minute'], 'enabled': data['enabled'], 'ratio': data['ratio']})
+        elif DataType(rqtType) == DataType.DATA_SCHEDULE_REMOVE:
+            if data['id'] <= len(dogs):
+                del dogs[data['id']]
 
-        print('replying', data)
+            dataDict = {
+                'type': j['type'],
+                'data': {
+                    'id': data['id']
+                }
+            }
+
+        sendData = json.dumps(dataDict)
+
+        print('replying', sendData)
         for client in clients:
-                client.sendMessage(data)
+                client.sendMessage(sendData)
 
     def handleConnected(self):
         print(self.address, 'connected')
@@ -63,5 +77,5 @@ class SimpleChat(WebSocket):
         print(self.address, 'closed')
 
 
-server = SimpleWebSocketServer('', 8000, SimpleChat)
+server = SimpleWebSocketServer('', 8000, Simulator)
 server.serveforever()
