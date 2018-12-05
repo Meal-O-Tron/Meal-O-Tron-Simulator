@@ -27,11 +27,11 @@ class Simulator(WebSocket):
     def handleMessage(self):
         print(self.address, 'sent', self.data)
         j = json.loads(self.data)
-        rqtType = j['type'] + 1
+        rqt_type = j['type'] + 1
         data = j['data']
-        dataDict = {}
+        data_dict = j
 
-        if DataType(rqtType) == DataType.DATA_SCHEDULE_ADD:
+        if DataType(rqt_type) == DataType.DATA_SCHEDULE_ADD:
             if 'enabled' not in data.keys():
                 data['enabled'] = True
             if 'id' not in data.keys():
@@ -39,7 +39,7 @@ class Simulator(WebSocket):
             if 'ratio' not in data.keys():
                 data['ratio'] = 0
 
-            dataDict = {
+            data_dict = {
                 'type': j['type'],
                 'data': {
                     'hour': data['hour'],
@@ -50,36 +50,29 @@ class Simulator(WebSocket):
                 }
             }
 
-            scheduleList.append({'hour': data['hour'], 'minute': data['minute'], 'enabled': data['enabled'], 'ratio': data['ratio']})
-        elif DataType(rqtType) == DataType.DATA_SCHEDULE_REMOVE:
+            scheduleList.append({'hour': data['hour'], 'minute': data['minute'], 'enabled': data['enabled'],
+                                 'ratio': data['ratio']})
+        elif DataType(rqt_type) == DataType.DATA_SCHEDULE_REMOVE:
             if data['id'] <= len(scheduleList):
                 del scheduleList[data['id']]
-
-            dataDict = j
-        elif DataType(rqtType) == DataType.DATA_SCHEDULE_ENABLE:
+        elif DataType(rqt_type) == DataType.DATA_SCHEDULE_ENABLE:
             if data['id'] <= len(scheduleList):
                 scheduleList[data['id']]['enabled'] = data['value']
-
-                dataDict = j
-        elif DataType(rqtType) == DataType.DATA_SCHEDULE_DATE:
+        elif DataType(rqt_type) == DataType.DATA_SCHEDULE_DATE:
             if data['id'] <= len(scheduleList):
-                currentItem = scheduleList[data['id']]
-                currentItem['hour'] = data['value']['hour']
-                currentItem['minute'] = data['value']['minute']
-
-                dataDict = j
-        elif DataType(rqtType) == DataType.DATA_SCHEDULE_RATIO:
+                current_item = scheduleList[data['id']]
+                current_item['hour'] = data['value']['hour']
+                current_item['minute'] = data['value']['minute']
+        elif DataType(rqt_type) == DataType.DATA_SCHEDULE_RATIO:
             if data['id'] <= len(scheduleList):
-                currentItem = scheduleList[data['id']]
-                currentItem['ratio'] = data['value']
+                current_item = scheduleList[data['id']]
+                current_item['ratio'] = data['value']
 
-                dataDict = j
+        send_data = json.dumps(data_dict)
 
-        sendData = json.dumps(dataDict)
-
-        print('replying', sendData)
+        print('replying', send_data)
         for client in clients:
-                client.sendMessage(sendData)
+                client.sendMessage(send_data)
 
     def handleConnected(self):
         print(self.address, 'connected')
