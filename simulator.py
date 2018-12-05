@@ -1,10 +1,11 @@
 from SimpleWebSocketServer import SimpleWebSocketServer, WebSocket
 from enum import Enum, auto
 import json
+import os
 
 clients = []
 scheduleList = []
-dogData = {'name': 'Pepito', 'weight': 42, 'weight_reg': True, 'weight_reg_value': 50}
+dogData = {}
 
 
 class DataType(Enum):
@@ -85,6 +86,16 @@ class Simulator(WebSocket):
         clients.remove(self)
         print(self.address, 'closed')
 
+
+if os.path.exists('data/dog.json'):
+    dog_file = open('data/dog.json')
+    dogData = json.load(dog_file)
+    dog_file.close()
+
+if os.path.exists('data/schedule_list.json'):
+    schedule_file = open('data/schedule_list.json')
+    scheduleList = json.load(schedule_file)
+    schedule_file.close()
 
 server = SimpleWebSocketServer('', 8000, Simulator)
 server.serveforever()
