@@ -68,6 +68,12 @@ class Simulator(WebSocket):
                 currentItem['minute'] = data['value']['minute']
 
                 dataDict = j
+        elif DataType(rqtType) == DataType.DATA_SCHEDULE_RATIO:
+            if data['id'] <= len(scheduleList):
+                currentItem = scheduleList[data['id']]
+                currentItem['ratio'] = data['value']
+
+                dataDict = j
 
         sendData = json.dumps(dataDict)
 
