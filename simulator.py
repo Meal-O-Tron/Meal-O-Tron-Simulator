@@ -4,6 +4,7 @@ import json
 
 clients = []
 scheduleList = []
+dogData = {'name': 'Pepito', 'weight': 42, 'weight_reg': True, 'weight_reg_value': 50}
 
 
 class DataType(Enum):
@@ -67,6 +68,8 @@ class Simulator(WebSocket):
             if data['id'] <= len(scheduleList):
                 current_item = scheduleList[data['id']]
                 current_item['ratio'] = data['value']
+        elif DataType(rqt_type) == DataType.DATA_DOG_NAME:
+            dogData['name'] = data['value']
 
         send_data = json.dumps(data_dict)
 
