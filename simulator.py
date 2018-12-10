@@ -2,6 +2,7 @@ from SimpleWebSocketServer import SimpleWebSocketServer, WebSocket
 from enum import Enum, auto
 import json
 import os
+import random
 
 clients = []
 scheduleList = []
@@ -74,7 +75,12 @@ class Simulator(WebSocket):
         elif DataType(rqt_type) == DataType.DATA_DOG_REGULATION_ENABLE:
             dogData['weight_reg'] = data['value']
         elif DataType(rqt_type) == DataType.DATA_DOG_REGULATION_VALUE:
-            dogData['weight'] = data['value']
+            dogData['weight_reg_value'] = data['value']
+        elif DataType(rqt_type) == DataType.DATA_DOG_WEIGHT:
+            new_weight = random.randint(1, 60)
+
+            dogData['weight'] = new_weight
+            data_dict['data']['value'] = new_weight
 
         send_data = json.dumps(data_dict)
 
