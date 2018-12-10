@@ -10,6 +10,12 @@ dogData = {}
 
 
 class DataType(Enum):
+    DATA_STATS_START = auto()
+    DATA_STATS_WEIGHT = auto()
+    DATA_STATS_REMAINING_FOOD = auto()
+    DATA_STATS_DOG_ARRIVAL = auto()
+    DATA_STATS_END = auto()
+
     DATA_SCHEDULE_START = auto()
     DATA_SCHEDULE_ADD = auto()
     DATA_SCHEDULE_REMOVE = auto()
