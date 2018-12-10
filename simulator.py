@@ -71,6 +71,8 @@ class Simulator(WebSocket):
                 current_item['ratio'] = data['value']
         elif DataType(rqt_type) == DataType.DATA_DOG_NAME:
             dogData['name'] = data['value']
+        elif DataType(rqt_type) == DataType.DATA_DOG_REGULATION_ENABLE:
+            dogData['weight_reg'] = data['value']
 
         send_data = json.dumps(data_dict)
 
