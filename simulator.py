@@ -87,6 +87,12 @@ class Simulator(WebSocket):
 
             dogData['weight'] = new_weight
             data_dict['data']['value'] = new_weight
+        elif DataType(rqt_type) == DataType.DATA_STATS_WEIGHT:
+            weight_array = []
+            for i in range(random.randint(1, 30)):
+                weight_array.append(random.randint(30, 40))
+
+            data_dict['data']['values'] = weight_array
 
         send_data = json.dumps(data_dict)
 
