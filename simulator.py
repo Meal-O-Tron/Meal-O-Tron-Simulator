@@ -7,6 +7,9 @@ import random
 clients = []
 scheduleList = []
 dogData = {}
+food_array = []
+arrival_array = []
+weight_array = []
 
 
 class DataType(Enum):
@@ -88,11 +91,23 @@ class Simulator(WebSocket):
             dogData['weight'] = new_weight
             data_dict['data']['value'] = new_weight
         elif DataType(rqt_type) == DataType.DATA_STATS_WEIGHT:
-            weight_array = []
+            weight_array.clear()
             for i in range(random.randint(1, 30)):
                 weight_array.append(random.randint(30, 40))
 
             data_dict['data']['values'] = weight_array
+        elif DataType(rqt_type) == DataType.DATA_STATS_REMAINING_FOOD:
+            food_array.clear()
+            for i in range(random.randint(1, 30)):
+                food_array.append(random.random())
+
+            data_dict['data']['values'] = food_array
+        elif DataType(rqt_type) == DataType.DATA_STATS_DOG_ARRIVAL:
+            arrival_array.clear()
+            for i in range(random.randint(1, 30)):
+                arrival_array.append(random.randint(1, 5))
+
+            data_dict['data']['values'] = arrival_array
 
         send_data = json.dumps(data_dict)
 
