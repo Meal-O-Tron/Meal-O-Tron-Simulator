@@ -13,6 +13,8 @@ weight_array = []
 
 
 class DataType(Enum):
+    DATA_GLOBAL_RELOAD = auto()
+
     DATA_STATS_START = auto()
     DATA_STATS_WEIGHT = auto()
     DATA_STATS_REMAINING_FOOD = auto()
@@ -108,6 +110,15 @@ class Simulator(WebSocket):
                 arrival_array.append(random.randint(1, 5))
 
             data_dict['data']['values'] = arrival_array
+        elif DataType(rqt_type) == DataType.DATA_GLOBAL_RELOAD:
+            stats_dict = {}
+            stats_dict['weight'] = weight_array
+            stats_dict['food'] = food_array
+            stats_dict['arrival'] = arrival_array
+
+            data_dict['data']['stats'] = stats_dict
+            data_dict['data']['dog'] = dogData
+            data_dict['data']['schedule'] = scheduleList
 
         send_data = json.dumps(data_dict)
 
@@ -133,6 +144,11 @@ if os.path.exists('data/schedule_list.json'):
     schedule_file = open('data/schedule_list.json')
     scheduleList = json.load(schedule_file)
     schedule_file.close()
+
+for i in range(random.randint(1, 30)):
+    weight_array.append(random.randint(30, 40))
+    food_array.append(random.random())
+    arrival_array.append(random.randint(1, 5))
 
 server = SimpleWebSocketServer('', 8000, Simulator)
 server.serveforever()
